@@ -114,6 +114,73 @@ services:
       KAFKA_CLUSTERS_0_ZOOKEEPER: "zk1:2181,zk2:2182,zk1:2183"
     networks:
       - <your Docker Network Name>
+
+
+  <your service name>-backend:
+    container_name: <your service name>-backend
+    build:
+      dockerfile: Dockerfile
+      context: ./backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mariadb://host.docker.internal:3306/<your DB NAME>?serverTimezone=UTC&useUniCode=yes&characterEncoding=UTF-8
+      SPRING_DATASOURCE_USERNAME: <your DB USERNAME>
+      SPRING_DATASOURCE_PASSWORD: <your DB PASSWORD>
+    ports:
+      - "9999:9999"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - <your Docker Network Name>
+    restart: on-failure
+    depends_on:
+      - <your service name>-database
+
+  <your service name>-frontend:
+    container_name: <your service name>-frontend
+    build:
+      dockerfile: Dockerfile
+      context: ./frontend
+    ports:
+      - "3000:3000"
+    restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - <your Docker Network Name>
+
+  <your service name>-radio:
+    container_name: <your service name>-radio
+    build:
+      dockerfile: Dockerfile
+      context: ./radioserver
+    ports:
+      - "8000:8000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - <your Docker Network Name>
+    restart: on-failure
+    depends_on:
+      - <your service name>-database
+  
+  <your service name>-database:
+    build:
+      dockerfile: Dockerfile
+      context: ./MariaDB
+    container_name: <your service name>-database
+    environment:
+      MARIADB_DATABASE: <your DB NAME>
+      MARIADB_ROOT_PASSWORD: <your DB PASSWORD>
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - <your Docker Network Name>
+    volumes:
+      - ./var/lib/mysql:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    restart: on-failure
+
 networks:
   <your Docker Network Name>:
     external: true

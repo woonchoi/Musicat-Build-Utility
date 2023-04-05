@@ -1,0 +1,77 @@
+spring:
+  datasource:
+    url: jdbc:mariadb://host.docker.internal:3306/<your DB NAME>?serverTimezone=UTC&useUniCode=yes&characterEncoding=UTF-8
+    username: <your DB USERNAME>
+    password: <your DB PASSWORD>
+    driverClassName: org.mariadb.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: true
+        show-sql: true
+
+  kafka:
+    clusters:
+      name: local
+    bootstrap-servers: host.docker.internal:9092, host.docker.internal:9093, host.docker.internal:9094
+    consumer:
+      group-id: unique-radio
+      auto-offset-reset: latest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    listener:
+      ack-mode: MANUAL
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: <your kakao Client ID>
+            redirect-uri: <your redirect uri>
+            client-authentication-method: POST
+            authorization-grant-type: authorization_code
+            scope: profile_nickname, profile_image, account_email #동의 항목
+            client-name: Kakao
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+
+# jwt secret, token-validate-time
+jwt:
+  secret: <your Token secret>
+  token-validate-time: 86400
+
+server:
+  port: 9999
+
+spotify:
+  client:
+    id: <your spotify api ID>
+    secret: <your spotify api SECRET>
+
+youtube:
+  client:
+    api-key: <your youtube API-KEY>
+
+lastfm:
+  client:
+    api-key: <your lastfm API-KEY>
+    secret: <your lastfm SECRET>
+
+
+logging:
+  level:
+    com.musicat: debug
+
+perspective:
+  api-key: <your perspective API-KEY>
