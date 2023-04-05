@@ -1,0 +1,16 @@
+version: '3.9'
+services:
+  <your service name>-radio:
+    container_name: <your service name>-radio
+    build:
+      dockerfile: Dockerfile
+      context: ./radioserver
+    ports:
+      - "8000:8000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - <your Docker Network Name>
+networks:
+  <your Docker Network Name>:
+    external: true
